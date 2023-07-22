@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait IERC20<TCStorage> {
+trait IERC20<TStorage> {
     fn transfer(ref self: TStorage, recipient: ContractAddress, amount: u256);
     fn balanceOf(self: @TStorage, account: ContractAddress) -> u256;
     fn mint(ref self: TStorage, recipient: ContractAddress, amount: u256);
@@ -11,6 +11,7 @@ trait IERC20<TCStorage> {
 mod ERC20 {
     use super::{IERC20, ContractAddress};
     use starknet::get_caller_address;
+    use zeroable::{Zeroable};
 
     #[storage]
     struct Storage {
@@ -19,7 +20,7 @@ mod ERC20 {
 
     #[constructor]
     fn constructor(ref self: ContractState) {
-        self._mint(get_caller_address(), Uint256 {low: 1000, high: 0});
+        self._mint(get_caller_address(), 1000_u256);
     }
 
     #[generate_trait]
@@ -43,6 +44,10 @@ mod ERC20 {
             assert(_balance >= amount, 'not enough token');
             self._balances.write(_sender, self._balances.read(_sender) - amount);
             self._balances.write(recipient, self._balances.read(recipient) + amount);
+        }
+
+        fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
+            self._balances.read(account)
         }
     }
 }
