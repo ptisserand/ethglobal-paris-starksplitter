@@ -26,13 +26,13 @@ fn jdoe() -> ContractAddress {
     contract_address_const::<4269>()
 }
 
-const shares_alice: u256 = 10_u256;
-const shares_bob: u256 = 40_u256;
+const shares_alice: u128 = 10_u128;
+const shares_bob: u128 = 40_u128;
 
 fn deploy_default() -> ISplitterDispatcher {
     let token_address = deploy_erc20();
     let mut payees: Array<ContractAddress> = ArrayTrait::new();
-    let mut shares: Array<u256> = ArrayTrait::new();
+    let mut shares: Array<u128> = ArrayTrait::new();
     payees.append(alice());
     shares.append(shares_alice);
     payees.append(bob());
@@ -40,7 +40,7 @@ fn deploy_default() -> ISplitterDispatcher {
     deploy(token_address, payees, shares, 300_u256)
 }
 
-fn deploy(token_address: ContractAddress, payees: Array<ContractAddress>, shares: Array<u256>, amount: u256) -> ISplitterDispatcher {
+fn deploy(token_address: ContractAddress, payees: Array<ContractAddress>, shares: Array<u128>, amount: u256) -> ISplitterDispatcher {
     let mut constructor_args: Array<felt252> = ArrayTrait::new();
     Serde::serialize(@token_address, ref constructor_args);
     Serde::serialize(@payees, ref constructor_args);
@@ -82,7 +82,7 @@ fn test_deploy_erc20() {
 fn test_deploy_mint() {
     let token_address = deploy_erc20();
     let mut payees: Array<ContractAddress> = ArrayTrait::new();
-    let mut shares: Array<u256> = ArrayTrait::new();
+    let mut shares: Array<u128> = ArrayTrait::new();
     payees.append(alice());
     shares.append(shares_alice);
     payees.append(bob());
@@ -95,7 +95,7 @@ fn test_deploy_mint() {
 #[available_gas(3000000)]
 fn test_deploy_constructor() {
     let splitter = deploy_default();
-    assert(splitter.totalReleased() == 0_u256, 'totalReleased');
+    assert(splitter.totalReleased() == 0_u128, 'totalReleased');
     assert(splitter.totalShares() == (shares_alice + shares_bob), 'totalShares');
 }
 
@@ -135,19 +135,19 @@ fn test_release_for_unknown_contract() {
 fn test_release() {
     let splitter = deploy_default();
     let erc20 = IERC20Dispatcher { contract_address: splitter.token() };
-    let expected_alice = 60_u256;
-    let expected_bob = 240_u256;
+    let expected_alice = 60_u128;
+    let expected_bob = 240_u128;
     let expected_amount = erc20.balanceOf(alice());
     assert(expected_amount == 0_u256, 'alice should be null');
     assert(splitter.release(alice()) == true, 'release alice');
     let expected_amount = erc20.balanceOf(alice());
-    assert(expected_amount == expected_alice, 'alice amount');
+    assert(expected_amount == u256 { low: expected_alice, high: 0}, 'alice amount');
     let expected_amount = erc20.balanceOf(bob());
     assert(expected_amount == 0_u256, 'should be null');
     assert(splitter.released(alice()) == expected_alice, 'alice released');
     assert(splitter.totalReleased() == expected_alice, 'totalReleased');
     assert(splitter.release(bob()) == true, 'release bob');
-    assert(erc20.balanceOf(bob()) == expected_bob, 'bob amount');
-    assert(erc20.balanceOf(alice()) == expected_alice, 'alice amount after');
+    assert(erc20.balanceOf(bob()) == u256 { low: expected_bob, high: 0}, 'bob amount');
+    assert(erc20.balanceOf(alice()) == u256 { low: expected_alice, high: 0}, 'alice amount after');
     assert(splitter.totalReleased() == (expected_alice + expected_bob), 'totalReleased');
 }
