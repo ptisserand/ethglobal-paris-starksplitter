@@ -1,0 +1,9 @@
+dependency_overrides:
+  starknet:
+      git:
+        url: https://github.com/focustree/starknet.dart
+        path: packages/starknet
+  starknet_builder:
+      git:
+        url: https://github.com/focustree/starknet.dart
+        path: packages/starknet_builder
