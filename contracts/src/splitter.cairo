@@ -36,17 +36,10 @@ mod Splitter {
     }
 
     #[derive(starknet::Event, Drop)]
-    struct PaymentReceived {
-        from: ContractAddress,
-        amount: u256,
-    }
-
-    #[derive(starknet::Event, Drop)]
     #[event]
     enum Event {
         PayeeAdded: PayeeAdded,
         PaymentReleased: PaymentReleased,
-        PaymentReceived: PaymentReceived,
     }
 
     #[constructor]
