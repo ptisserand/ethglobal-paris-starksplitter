@@ -1,6 +1,6 @@
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { Box, Button, Card, CardBody, CardHeader, Flex, Heading, IconButton, Input, VStack } from "@chakra-ui/react"
-import { useAccount } from "@starknet-react/core";
+import { Box, Button, Card, CardBody, CardHeader, Flex, Heading, IconButton, Input, Link, VStack } from "@chakra-ui/react"
+import { useAccount, useProvider } from "@starknet-react/core";
 import { useState } from "react";
 import { ENV_CLASS_HASH, ENV_ERC20_ADDR } from "../config";
 
@@ -33,9 +33,12 @@ const PayeeDisplay: React.FC<PayeeProp> = ({ payee, onClick }) => {
 
 const Deployer = () => {
     const { account } = useAccount();
+    const { provider } = useProvider();
+
     const [payees, setPayees] = useState<_Payee[]>([]);
     const [address, setAddress] = useState<string>("");
     const [shares, setShares] = useState<number>(0);
+    const [lastAddress, setLastAddress] = useState("");
 
     const deploy = async () =>  {
         if (account === undefined) {
@@ -44,10 +47,13 @@ const Deployer = () => {
         let addressData = payees.map((e) => e.address);
         let sharesData = payees.map((e) => e.shares);
         try {
-        await account.deployContract({
+        const deployedResponse = await account.deployContract({
             classHash: ENV_CLASS_HASH,
             constructorCalldata: [ENV_ERC20_ADDR, addressData.length, ...addressData, sharesData.length, ...sharesData],
-        })
+        });
+        await provider.waitForTransaction(deployedResponse.transaction_hash);
+        setLastAddress(deployedResponse.contract_address);
+
     } catch(e) {
         console.error(e);
     }
@@ -66,6 +72,11 @@ const Deployer = () => {
             <Card>
                 <CardHeader>
                     <Box><Button disabled={account === undefined} onClick={deploy}>Deploy!</Button></Box>
+                    <Heading size="sm">
+                        <Link isExternal={true}
+                        href={`https://testnet.starkscan.co/contract/${lastAddress}`}
+                        >{lastAddress}</Link>
+                        </Heading>
                 </CardHeader>
                 <CardBody>
                     <VStack width="100%">
