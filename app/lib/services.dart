@@ -18,7 +18,7 @@ Future<String> sendTick({
   var bob = "0xf722B3d620E231FCcD7d3de2719A8DBc0412e095";
 
   s.Signer? signer = s.Signer(privateKey: s.Felt.fromBytes(privateKey));
-  var credentials = web3.EthPrivateKey.fromHex(signer.privateKey.toHexString());
+  var credentials = web3.EthPrivateKey.fromHex(signer.privateKey.toJson());
   var api = xmtp.Api.create();
   var client = await xmtp.Client.createFromWallet(api, credentials.asSigner());
 
