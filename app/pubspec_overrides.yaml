@@ -7,3 +7,15 @@ dependency_overrides:
       git:
         url: https://github.com/focustree/starknet.dart
         path: packages/starknet_builder
+  wallet_kit:
+      git:
+        url: https://github.com/focustree/starknet.dart
+        path: packages/wallet_kit
+  secure_store:
+      git:
+        url: https://github.com/focustree/starknet.dart
+        path: packages/secure_store
+        ref: prepare-starknet-cc
+
+
+
