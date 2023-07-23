@@ -1,19 +1,20 @@
 import { Box, Button, Card, CardBody, CardHeader, Flex, Heading, Input, Text, VStack } from "@chakra-ui/react"
 import { useAccount, useContractWrite } from "@starknet-react/core"
 import { useMemo, useState } from "react";
-import { getContractAddress } from "../config";
+import { useAppContext } from "../context/AppContext";
 
 const Releaser = () => {
     const { account } = useAccount();
     const [address, setAddress] = useState<string>("");
-    
+    const { splitterContract} = useAppContext();
+
     const calls = useMemo(() => {
         return {
-            contractAddress: getContractAddress(),
+            contractAddress: splitterContract,
             entrypoint: 'release',
             calldata: [address],
         }
-    }, [address]);
+    }, [splitterContract, address]);
     
     const {write } = useContractWrite({
         calls
@@ -27,7 +28,7 @@ const Releaser = () => {
         <>
             <Card>
                 <CardHeader>
-                    <Box><Button disabled={account === undefined} onClick={release}>Release!</Button></Box>
+                    <Box><Button disabled={account === undefined || splitterContract=== ""} onClick={release}>Release!</Button></Box>
                 </CardHeader>
                 <CardBody>
                     <VStack width="100%">

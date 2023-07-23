@@ -2,6 +2,8 @@ import React from 'react';
 import { InjectedConnector, StarknetConfig } from '@starknet-react/core';
 import { ChakraProvider, Container, Heading, SimpleGrid, Stack, Text } from '@chakra-ui/react';
 
+import { AppContextProvider, useAppContext } from './context/AppContext';
+
 import { GIT_REVISION } from './revision';
 import './App.css';
 import Deployer from './components/Deployer';
@@ -34,7 +36,9 @@ function App() {
   return (
     <>
       <ChakraProvider>
-        <AppDisplay></AppDisplay>
+        <AppContextProvider>
+          <AppDisplay></AppDisplay>
+        </AppContextProvider>
         <Container>
           <Text>{GIT_REVISION}</Text>
         </Container>

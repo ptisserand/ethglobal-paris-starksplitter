@@ -2,7 +2,8 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, CardBody, CardHeader, Flex, Heading, IconButton, Input, Link, VStack } from "@chakra-ui/react"
 import { useAccount, useProvider } from "@starknet-react/core";
 import { useState } from "react";
-import { ENV_CLASS_HASH, ENV_ERC20_ADDR, updateContractAddress } from "../config";
+import { ENV_CLASS_HASH, ENV_ERC20_ADDR } from "../config";
+import { useAppContext } from "../context/AppContext";
 
 type _Payee = {
     address: string;
@@ -38,8 +39,8 @@ const Deployer = () => {
     const [payees, setPayees] = useState<_Payee[]>([]);
     const [address, setAddress] = useState<string>("");
     const [shares, setShares] = useState<number>(0);
-    const [lastAddress, setLastAddress] = useState("");
-
+    const { splitterContract, setSplitterContract} = useAppContext();
+    
     const deploy = async () =>  {
         if (account === undefined) {
             return;
@@ -52,8 +53,7 @@ const Deployer = () => {
             constructorCalldata: [ENV_ERC20_ADDR, addressData.length, ...addressData, sharesData.length, ...sharesData],
         });
         await provider.waitForTransaction(deployedResponse.transaction_hash);
-        setLastAddress(deployedResponse.contract_address);
-        updateContractAddress(deployedResponse.contract_address);
+        setSplitterContract(deployedResponse.contract_address);
     } catch(e) {
         console.error(e);
     }
@@ -74,8 +74,8 @@ const Deployer = () => {
                     <Box><Button disabled={account === undefined} onClick={deploy}>Deploy!</Button></Box>
                     <Heading size="sm">
                         <Link isExternal={true}
-                        href={`https://testnet.starkscan.co/contract/${lastAddress}`}
-                        >{lastAddress}</Link>
+                        href={`https://testnet.starkscan.co/contract/${splitterContract}`}
+                        >{splitterContract}</Link>
                         </Heading>
                 </CardHeader>
                 <CardBody>
