@@ -23,7 +23,6 @@ class HomeScreen extends HookConsumerWidget {
         ),
         SizedBox(height: 32),
         WalletBody(),
-        SendEthButton(),
         SendTickButton(),
       ],
     );

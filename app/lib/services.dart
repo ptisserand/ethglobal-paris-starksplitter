@@ -1,11 +1,10 @@
+import 'dart:math';
+
 import 'package:secure_store/secure_store.dart' as ss;
 import 'package:starknet/starknet.dart' as s;
 import 'package:wallet_kit/wallet_state/index.dart';
-
-import './counter.sierra.g.dart';
-
-final counterAddress = s.Felt.fromHexString(
-    '0x01ba4797600f996c8a0f1be323648d8e97d6b3f297f92225476a59b128aa8bce');
+import 'package:xmtp/xmtp.dart' as xmtp;
+import 'package:web3dart/credentials.dart' as web3;
 
 Future<String> sendTick({
   required Account account,
@@ -16,24 +15,25 @@ Future<String> sendTick({
   if (privateKey == null) {
     throw Exception("Private key is null");
   }
+  var bob = "0xf722B3d620E231FCcD7d3de2719A8DBc0412e095";
 
   s.Signer? signer = s.Signer(privateKey: s.Felt.fromBytes(privateKey));
+  var credentials = web3.EthPrivateKey.fromHex(signer.privateKey.toHexString());
+  var api = xmtp.Api.create();
+  var client = await xmtp.Client.createFromWallet(api, credentials.asSigner());
 
-  final provider = s.JsonRpcProvider.infuraGoerliTestnet;
+  var convo = await client.newConversation(bob);
+  await client.sendMessage(convo, 'From Starknet!');
 
-  final callerAccount = s.Account(
-    provider: provider,
-    signer: signer,
-    accountAddress: s.Felt.fromHexString(account.address),
-    chainId: s.StarknetChainId.testNet,
-  );
-
+/*
   final contract = Counter(
     account: callerAccount,
     address: counterAddress,
   );
   final txHash = await contract.tick();
   print(txHash);
+  */
+  const txHash = "0xDEADBEEFCACA";
   // set signer to null to avoid storing the private key in memory
   signer = null;
 
