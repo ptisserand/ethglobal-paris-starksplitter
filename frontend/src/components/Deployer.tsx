@@ -2,7 +2,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, CardBody, CardHeader, Flex, Heading, IconButton, Input, Link, VStack } from "@chakra-ui/react"
 import { useAccount, useProvider } from "@starknet-react/core";
 import { useState } from "react";
-import { ENV_CLASS_HASH, ENV_ERC20_ADDR } from "../config";
+import { ENV_CLASS_HASH, ENV_ERC20_ADDR, updateContractAddress } from "../config";
 
 type _Payee = {
     address: string;
@@ -53,7 +53,7 @@ const Deployer = () => {
         });
         await provider.waitForTransaction(deployedResponse.transaction_hash);
         setLastAddress(deployedResponse.contract_address);
-
+        updateContractAddress(deployedResponse.contract_address);
     } catch(e) {
         console.error(e);
     }
