@@ -25,10 +25,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node scripts/get_version.js && node ./start.js",
-    "build": "node scripts/get_version.js && node ./build.js",
-    "test": "node scripts/get_version.js && react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node scripts/get_version.js && vite",
+    "build": "node scripts/get_version.js && vite build",
+    "serve": "node scripts/get_version.js && vite serve"
   },
   "eslintConfig": {
     "extends": [
